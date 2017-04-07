@@ -4,7 +4,7 @@ Vagrant.require_version ">= 1.8.0"
 
 # Install required Vagrant plugins
 missing_plugins_installed = false
-required_plugins = %w(vagrant-vbguest vagrant-hostmanager vagrant-cachier vagrant-registration vagrant-adbinfo landrush)
+required_plugins = %w(vagrant-vbguest vagrant-hostmanager vagrant-cachier vagrant-registration vagrant-adbinfo landrush vagrant-sshfs)
 
 required_plugins.each do |plugin|
   if !Vagrant.has_plugin? plugin
@@ -25,7 +25,7 @@ Vagrant.configure(2) do |config|
   config.vm.provider "virtualbox" do |vb|
     # Customize the amount of memory on the VM:
     vb.memory = 2048
-    vb.cpus = 2
+    vb.cpus = 1
     vb.name = "nexus"
 
     # Enable VB performance customizations
@@ -35,7 +35,7 @@ Vagrant.configure(2) do |config|
   config.vm.box = "precise32"
   config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
-  config.vm.hostname = "nexus.vm"
+  #config.vm.hostname = "nexus.vm"
   config.vm.network "private_network", ip: "10.1.2.4"
 
   config.vm.define :nexus do |nexus|
@@ -49,13 +49,15 @@ Vagrant.configure(2) do |config|
     # Optional. Allows to sync Nexus work folder to the host machine.
     config.vm.synced_folder "./nexus", "/srv/sonatype-work/nexus", create: true, :mount_options => ["uid=998,gid=998"]
 
+    #config.vm.synced_folder "./nexus", "/srv/sonatype-work/nexus", type: "sshfs"
+
     config.vm.provision :puppet do |puppet|
        puppet.manifests_path = "puppet/manifests"
        puppet.module_path = "puppet/modules"
      end
   	
     config.vm.provision "shell", inline: "service nexus restart", run: "always"
-    config.vm.post_up_message = "https://10.1.2.4:8081/nexus/ "
+    config.vm.post_up_message = "http://10.1.2.4:8081/nexus/ "
   end
 
 end
