@@ -21,30 +21,36 @@ end
 
 Vagrant.configure(2) do |config|
 
+  config.vm.box = "precise32"
 
-  config.vm.provider "virtualbox" do |vb|
+  config.vm.provider "libvirt" do |v|
+     v.driver = "kvm"
+     v.memory = 2048
+     v.cpus   = 1
+  end
+
+  #config.vm.provider "virtualbox" do |vb|
     # Customize the amount of memory on the VM:
-    vb.memory = 2048
-    vb.cpus = 1
-    vb.name = "nexus"
+  #  vb.memory = 2048
+  #  vb.cpus = 1
+  #  vb.name = "nexus"
 
     # Enable VB performance customizations
-    vb.customize ["modifyvm", :id, "--ioapic", "on"]
-  end
-    # Enable VB performance customizations  
-  config.vm.box = "precise32"
-  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  #  vb.customize ["modifyvm", :id, "--ioapic", "on"]
+  # end
+  
 
-  #config.vm.hostname = "nexus.vm"
-  config.vm.network "private_network", ip: "10.1.2.4"
+  # config.vm.hostname = "nexus.vm"
+  # config.vm.network "private_network", ip: "10.1.2.4"
 
   config.vm.define :nexus do |nexus|
+    nexus.vm.network :private_network, :ip => "192.168.42.50"
       # Config landrush DNS
-    config.landrush.enabled = true
-    config.landrush.tld = "nexus.vm"
-    config.landrush.host_ip_address = "10.1.2.4"
-    config.landrush.guest_redirect_dns = false
-    config.landrush.upstream "8.8.8.8" #Google DNS
+    #config.landrush.enabled = true
+    #config.landrush.tld = "nexus-libvirt.vm"
+    #config.landrush.host_ip_address = "10.1.2.4"
+    #config.landrush.guest_redirect_dns = false
+    #config.landrush.upstream "8.8.8.8" #Google DNS
     
     # Optional. Allows to sync Nexus work folder to the host machine.
     config.vm.synced_folder "./nexus", "/srv/sonatype-work/nexus", create: true, :mount_options => ["uid=998,gid=998"]
@@ -57,7 +63,7 @@ Vagrant.configure(2) do |config|
      end
   	
     config.vm.provision "shell", inline: "service nexus restart", run: "always"
-    config.vm.post_up_message = "http://10.1.2.4:8081/nexus/ "
+    config.vm.post_up_message = "http://192.168.42.50:8081/nexus/"
   end
 
 end
