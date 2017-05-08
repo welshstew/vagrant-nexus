@@ -44,7 +44,7 @@ Vagrant.configure(2) do |config|
   # config.vm.network "private_network", ip: "10.1.2.4"
 
   config.vm.define :nexus do |nexus|
-    nexus.vm.network :private_network, :ip => "192.168.42.50"
+    nexus.vm.network :private_network, :ip => "192.168.122.50"
       # Config landrush DNS
     #config.landrush.enabled = true
     #config.landrush.tld = "nexus-libvirt.vm"
@@ -63,7 +63,7 @@ Vagrant.configure(2) do |config|
      end
   	
     config.vm.provision "shell", inline: "service nexus restart", run: "always"
-    config.vm.post_up_message = "http://192.168.42.50:8081/nexus/"
+    config.vm.post_up_message = "http://192.168.122.50:8081/nexus/"
   end
 
 end
